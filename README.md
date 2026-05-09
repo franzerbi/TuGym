@@ -9,13 +9,12 @@ Proyecto personal pensado para uso diario en el celular, instalable como PWA (Pr
 
 ## ¿Por qué este proyecto?
 
-La mayoría de las apps que existen o tienen un modelo de pago tipo suscripcion, el cual no estoy dispuesto a pagar, o no tienen todas las funciones que me parecen necesarias. 
-Quería una app simple que hiciera bien tres cosas:
+La mayoría de las apps que existen o tienen modelos de suscripción que no estoy dispuesto a pagar, o no tienen todas las funciones que me parecen necesarias. Por eso decidí hacer la mía:
 
-Armar una rutina a mano.
-Registrar series con peso y repeticiones de manera rápida durante el entrenamiento.
-Mostrar de un vistazo cómo evoluciona el peso que levanto en cada ejercicio.
-Llevar registro de mi peso corporal en paralelo.
+- Armar una rutina a mano.
+- Registrar series con peso y repeticiones de manera rápida durante el entrenamiento.
+- Mostrar de un vistazo cómo evoluciona el peso que levanto en cada ejercicio.
+- Llevar registro de mi peso corporal en paralelo.
 
 ---
 
@@ -114,5 +113,6 @@ gym-tracker/
 **Francisco Zerbino**
 Estudiante de Licenciatura en Informática — Universidad de Montevideo
 
-- LinkedIn: [www.linkedin.com/in/francisco-zerbino-618a80331]
+- LinkedIn: [Francisco Zerbino](https://www.linkedin.com/in/francisco-zerbino-618a80331)
 - GitHub: [@franzerbi](https://github.com/franzerbi)
+
