@@ -55,6 +55,7 @@ export interface Workout {
   id?: ID;
   date: string;
   notes?: string;
+  routineId?: ID;
   createdAt: number;
 }
 
@@ -66,6 +67,16 @@ export interface WorkoutSet {
   reps: number;
   setNumber: number;
 }
+
+export interface Routine {
+  id?: ID;
+  name: string;
+  exerciseIds: ID[];
+  days?: number[]; // 0=dom, 1=lun, 2=mar, 3=mié, 4=jue, 5=vie, 6=sáb
+  createdAt: number;
+}
+
+export const DAY_LABELS_SHORT = ["D", "L", "M", "M", "J", "V", "S"] as const;
 
 export interface BodyWeight {
   id?: ID;

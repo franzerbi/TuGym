@@ -1,8 +1,8 @@
 "use client";
 
-import { use } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
-import { notFound, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ExerciseForm } from "@/components/exercise-form";
@@ -12,17 +12,32 @@ import {
   updateExercise,
 } from "@/lib/db/exercises";
 
-type Params = Promise<{ id: string }>;
+export default function EditarEjercicioPage() {
+  return (
+    <Suspense
+      fallback={
+        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">
+          Cargando...
+        </p>
+      }
+    >
+      <EditarContent />
+    </Suspense>
+  );
+}
 
-export default function EditarEjercicioPage({ params }: { params: Params }) {
-  const { id: idParam } = use(params);
+function EditarContent() {
+  const searchParams = useSearchParams();
   const router = useRouter();
 
-  const id = Number.parseInt(idParam, 10);
-  if (Number.isNaN(id)) notFound();
+  const idParam = searchParams.get("id");
+  const id = idParam ? Number.parseInt(idParam, 10) : Number.NaN;
 
   const exercise = useLiveQuery(
-    async () => (await getExercise(id)) ?? null,
+    async () => {
+      if (Number.isNaN(id)) return null;
+      return (await getExercise(id)) ?? null;
+    },
     [id],
   );
 
@@ -34,6 +49,10 @@ export default function EditarEjercicioPage({ params }: { params: Params }) {
     if (!confirmed) return;
     await deleteExercise(id);
     router.push("/ejercicios");
+  }
+
+  if (Number.isNaN(id)) {
+    return <NotFoundState />;
   }
 
   return (
@@ -86,7 +105,7 @@ export default function EditarEjercicioPage({ params }: { params: Params }) {
 
 function NotFoundState() {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-zinc-300 bg-white px-6 py-10 text-center dark:border-zinc-800 dark:bg-zinc-950">
+    <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-300 bg-white px-6 py-10 text-center dark:border-zinc-800 dark:bg-zinc-950">
       <p className="text-base font-semibold">Ejercicio no encontrado</p>
       <p className="text-sm text-zinc-600 dark:text-zinc-400">
         Puede que lo hayas eliminado.

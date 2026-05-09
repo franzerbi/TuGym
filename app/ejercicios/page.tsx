@@ -38,7 +38,7 @@ export default function EjerciciosPage() {
           {exercises.map((ex) => (
             <li key={ex.id}>
               <Link
-                href={`/ejercicios/${ex.id}`}
+                href={`/ejercicios/historial?id=${ex.id}`}
                 className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
               >
                 <span className="flex flex-col gap-0.5">

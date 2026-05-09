@@ -2,6 +2,7 @@ import Dexie, { type Table } from "dexie";
 import type {
   BodyWeight,
   Exercise,
+  Routine,
   Workout,
   WorkoutSet,
 } from "@/types";
@@ -11,6 +12,7 @@ export class TuGymDB extends Dexie {
   workouts!: Table<Workout, number>;
   sets!: Table<WorkoutSet, number>;
   bodyWeights!: Table<BodyWeight, number>;
+  routines!: Table<Routine, number>;
 
   constructor() {
     super("tugym");
@@ -21,5 +23,12 @@ export class TuGymDB extends Dexie {
       sets: "++id, workoutId, exerciseId, [workoutId+exerciseId]",
       bodyWeights: "++id, date",
     });
+
+    this.version(2).stores({
+      routines: "++id, name, createdAt",
+    });
+
+    // v3: added days field to routines (no index change needed)
+    this.version(3).stores({});
   }
 }
