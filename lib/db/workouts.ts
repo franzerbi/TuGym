@@ -28,6 +28,23 @@ export async function createWorkout(input: WorkoutInput): Promise<ID> {
   });
 }
 
+export async function completeWorkout(id: ID): Promise<void> {
+  await getDb().workouts.update(id, { completedAt: Date.now() });
+}
+
+export async function findInProgressWorkout(
+  date: string,
+  routineId?: ID,
+): Promise<Workout | undefined> {
+  const candidates = await getDb()
+    .workouts.where("date")
+    .equals(date)
+    .toArray();
+  return candidates.find(
+    (w) => w.completedAt == null && w.routineId === routineId,
+  );
+}
+
 export async function deleteWorkout(id: ID): Promise<void> {
   const db = getDb();
   await db.transaction("rw", [db.workouts, db.sets], async () => {

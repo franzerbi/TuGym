@@ -7,7 +7,7 @@ import { ArrowLeft, Dumbbell, Plus, Trash2, X } from "lucide-react";
 import { useWorkout, useWorkoutSets } from "@/lib/hooks/use-workouts";
 import { useExercises } from "@/lib/hooks/use-exercises";
 import { useRoutine } from "@/lib/hooks/use-routines";
-import { deleteSet, deleteWorkout } from "@/lib/db/workouts";
+import { completeWorkout, deleteSet, deleteWorkout } from "@/lib/db/workouts";
 import { WorkoutSetInput } from "@/components/workout-set-input";
 import { WorkoutExercisePicker } from "@/components/workout-exercise-picker";
 import { MUSCLE_GROUP_LABELS } from "@/types";
@@ -41,6 +41,7 @@ function SesionContent() {
 
   const [showPicker, setShowPicker] = useState(false);
   const [pendingExerciseIds, setPendingExerciseIds] = useState<ID[]>([]);
+  const [finishing, setFinishing] = useState(false);
   const routineLoaded = useRef(false);
 
   // Pre-populate exercises from routine (once)
@@ -98,6 +99,17 @@ function SesionContent() {
 
   async function handleDeleteSet(setId: ID) {
     await deleteSet(setId);
+  }
+
+  async function handleFinish() {
+    if (!sets || sets.length === 0) return;
+    setFinishing(true);
+    try {
+      await completeWorkout(id);
+      router.push("/entrenar");
+    } catch {
+      setFinishing(false);
+    }
   }
 
   return (
@@ -189,12 +201,19 @@ function SesionContent() {
 
       {/* Actions */}
       <div className="flex flex-col gap-3 border-t border-zinc-200 pt-5 dark:border-zinc-800">
-        <Link
-          href="/entrenar"
-          className="flex h-12 items-center justify-center rounded-xl bg-zinc-900 px-6 text-base font-semibold text-zinc-50 transition-colors hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
+        <button
+          type="button"
+          onClick={handleFinish}
+          disabled={sets.length === 0 || finishing}
+          className="flex h-12 items-center justify-center rounded-xl bg-zinc-900 px-6 text-base font-semibold text-zinc-50 transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
         >
           Finalizar entrenamiento
-        </Link>
+        </button>
+        {sets.length === 0 && (
+          <p className="-mt-1 text-center text-xs text-zinc-500 dark:text-zinc-400">
+            Agregá al menos una serie para finalizar.
+          </p>
+        )}
         <button
           type="button"
           onClick={handleDeleteWorkout}

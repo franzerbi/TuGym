@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { Plus } from "lucide-react";
 import { addSet, getNextSetNumber } from "@/lib/db/workouts";
+import { parseDecimal } from "@/lib/number";
 import type { ID } from "@/types";
 
 type Props = {
@@ -18,7 +19,7 @@ export function WorkoutSetInput({ workoutId, exerciseId }: Props) {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const kg = Number.parseFloat(weight);
+    const kg = parseDecimal(weight);
     const r = Number.parseInt(reps, 10);
     if (!weight || Number.isNaN(kg) || kg <= 0) return;
     if (!reps || Number.isNaN(r) || r <= 0) return;
@@ -37,20 +38,18 @@ export function WorkoutSetInput({ workoutId, exerciseId }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex items-end gap-2">
-      <label className="flex flex-1 flex-col gap-1">
+      <label className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="text-xs text-zinc-500 dark:text-zinc-400">Kg</span>
         <input
-          type="number"
+          type="text"
           inputMode="decimal"
-          step="0.5"
-          min="0"
           value={weight}
-          onChange={(e) => setWeight(e.target.value)}
+          onChange={(e) => setWeight(e.target.value.replace(/[^0-9.,]/g, ""))}
           placeholder="0"
-          className="h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:focus:border-zinc-100"
+          className="h-10 w-full min-w-0 rounded-lg border border-zinc-300 bg-white px-3 text-sm outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:focus:border-zinc-100"
         />
       </label>
-      <label className="flex flex-1 flex-col gap-1">
+      <label className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="text-xs text-zinc-500 dark:text-zinc-400">Reps</span>
         <input
           type="number"
@@ -59,7 +58,7 @@ export function WorkoutSetInput({ workoutId, exerciseId }: Props) {
           value={reps}
           onChange={(e) => setReps(e.target.value)}
           placeholder="0"
-          className="h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:focus:border-zinc-100"
+          className="h-10 w-full min-w-0 rounded-lg border border-zinc-300 bg-white px-3 text-sm outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:focus:border-zinc-100"
         />
       </label>
       <button

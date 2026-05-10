@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { useBodyWeights } from "@/lib/hooks/use-body-weights";
 import { createBodyWeight, deleteBodyWeight } from "@/lib/db/body-weight";
+import { parseDecimal } from "@/lib/number";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -95,7 +96,7 @@ function WeightForm() {
     e.preventDefault();
     setError(null);
 
-    const kg = Number.parseFloat(weight);
+    const kg = parseDecimal(weight);
     if (!weight || Number.isNaN(kg) || kg <= 0) {
       setError("Ingresá un peso válido.");
       return;
@@ -127,13 +128,11 @@ function WeightForm() {
         <label className="flex flex-col gap-1.5">
           <span className="text-sm font-medium">Peso (kg)</span>
           <input
-            type="number"
+            type="text"
             inputMode="decimal"
-            step="0.1"
-            min="0"
             value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-            placeholder="Ej: 75.5"
+            onChange={(e) => setWeight(e.target.value.replace(/[^0-9.,]/g, ""))}
+            placeholder="Ej: 75,5"
             className="rounded-xl border border-zinc-300 bg-white px-4 py-3 text-base outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:focus:border-zinc-100"
           />
         </label>

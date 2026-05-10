@@ -57,6 +57,7 @@ export interface Workout {
   notes?: string;
   routineId?: ID;
   createdAt: number;
+  completedAt?: number;
 }
 
 export interface WorkoutSet {
