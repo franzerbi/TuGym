@@ -192,36 +192,41 @@ function SesionContent() {
         <button
           type="button"
           onClick={() => setShowPicker(true)}
-          className="flex h-12 items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-300 px-5 text-sm font-medium text-zinc-600 transition-colors hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-100"
+          className="flex items-center justify-center gap-2 self-start rounded-lg px-3 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
         >
           <Plus size={16} aria-hidden="true" />
           Agregar ejercicio
         </button>
       )}
 
-      {/* Actions */}
-      <div className="flex flex-col gap-3 border-t border-zinc-200 pt-5 dark:border-zinc-800">
+      {/* Delete (secondary, in flow) */}
+      <button
+        type="button"
+        onClick={handleDeleteWorkout}
+        className="flex h-12 items-center justify-center gap-2 rounded-xl border border-red-300 px-5 text-base font-semibold text-red-700 transition-colors hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950"
+      >
+        <Trash2 size={18} aria-hidden="true" />
+        Eliminar entrenamiento
+      </button>
+
+      {/* Sticky finish CTA — sits above the BottomNav */}
+      <div
+        className="sticky z-30 -mx-4 mt-2 border-t border-zinc-200 bg-zinc-50/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-zinc-50/75 dark:border-zinc-800 dark:bg-black/95 dark:supports-[backdrop-filter]:bg-black/75"
+        style={{ bottom: "calc(4rem + env(safe-area-inset-bottom))" }}
+      >
         <button
           type="button"
           onClick={handleFinish}
           disabled={sets.length === 0 || finishing}
-          className="flex h-12 items-center justify-center rounded-xl bg-zinc-900 px-6 text-base font-semibold text-zinc-50 transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
+          className="flex h-12 w-full items-center justify-center rounded-xl bg-zinc-900 px-6 text-base font-semibold text-zinc-50 transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
         >
-          Finalizar entrenamiento
+          {finishing ? "Finalizando..." : "Finalizar entrenamiento"}
         </button>
         {sets.length === 0 && (
-          <p className="-mt-1 text-center text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
             Agregá al menos una serie para finalizar.
           </p>
         )}
-        <button
-          type="button"
-          onClick={handleDeleteWorkout}
-          className="flex h-12 items-center justify-center gap-2 rounded-xl border border-red-300 px-5 text-base font-semibold text-red-700 transition-colors hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950"
-        >
-          <Trash2 size={18} aria-hidden="true" />
-          Eliminar entrenamiento
-        </button>
       </div>
     </div>
   );

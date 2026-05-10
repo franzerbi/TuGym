@@ -125,3 +125,33 @@ export async function getNextSetNumber(
     .count();
   return count + 1;
 }
+
+export async function getLastSetForExercise(
+  exerciseId: ID,
+  workoutId?: ID,
+): Promise<WorkoutSet | undefined> {
+  const db = getDb();
+  if (workoutId != null) {
+    const inWorkout = await db.sets
+      .where("[workoutId+exerciseId]")
+      .equals([workoutId, exerciseId])
+      .toArray();
+    if (inWorkout.length > 0) {
+      return inWorkout.sort((a, b) => b.setNumber - a.setNumber)[0];
+    }
+  }
+  const all = await db.sets.where("exerciseId").equals(exerciseId).toArray();
+  if (all.length === 0) return undefined;
+  const workoutIds = [...new Set(all.map((s) => s.workoutId))];
+  const workouts = await db.workouts.bulkGet(workoutIds);
+  const dateMap = new Map<ID, string>();
+  for (const w of workouts) if (w) dateMap.set(w.id!, w.date);
+  return all
+    .map((s) => ({ s, date: dateMap.get(s.workoutId) ?? "" }))
+    .sort(
+      (a, b) =>
+        b.date.localeCompare(a.date) ||
+        b.s.workoutId - a.s.workoutId ||
+        b.s.setNumber - a.s.setNumber,
+    )[0]?.s;
+}

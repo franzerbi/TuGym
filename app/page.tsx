@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Dumbbell, PlayCircle, Scale, ChevronRight } from "lucide-react";
 import { getDb } from "@/lib/db/index";
-import { createWorkout } from "@/lib/db/workouts";
+import { createWorkout, findInProgressWorkout } from "@/lib/db/workouts";
 import { useRoutines } from "@/lib/hooks/use-routines";
 import { useBodyWeights } from "@/lib/hooks/use-body-weights";
 import type { ID } from "@/types";
@@ -57,7 +57,10 @@ export default function Home() {
   async function handleStartRoutine(routineId: ID) {
     setStartingId(routineId);
     try {
-      const id = await createWorkout({ date: todayISO(), routineId });
+      const today = todayISO();
+      const existing = await findInProgressWorkout(today, routineId);
+      const id =
+        existing?.id ?? (await createWorkout({ date: today, routineId }));
       router.push(`/entrenar/sesion?id=${id}`);
     } catch {
       setStartingId(null);
