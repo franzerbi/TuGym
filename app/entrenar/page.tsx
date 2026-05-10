@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
 import { CheckCircle, ChevronRight, Pencil, PlayCircle, Plus } from "lucide-react";
 import { getDb } from "@/lib/db/index";
-import { createWorkout } from "@/lib/db/workouts";
+import { createWorkout, findInProgressWorkout } from "@/lib/db/workouts";
+import { todayISO } from "@/lib/date";
 import { useRoutines } from "@/lib/hooks/use-routines";
 import { ActivityCalendar } from "@/components/activity-calendar";
 import type { ID } from "@/types";
@@ -29,6 +30,7 @@ function useWorkoutSummaries(): WorkoutSummary[] | undefined {
     const exerciseMap = new Map(exercises.map((e) => [e.id!, e.name]));
 
     return workouts
+      .filter((w) => w.completedAt != null)
       .sort(
         (a, b) =>
           b.date.localeCompare(a.date) || b.createdAt - a.createdAt,
@@ -53,27 +55,29 @@ function useWorkoutDates(): Set<string> | undefined {
   return useLiveQuery(async () => {
     const db = getDb();
     const workouts = await db.workouts.toArray();
-    return new Set(workouts.map((w) => w.date));
+    return new Set(
+      workouts.filter((w) => w.completedAt != null).map((w) => w.date),
+    );
   });
 }
 
 function useTodayRoutineIds(): Set<ID> | undefined {
   return useLiveQuery(async () => {
     const db = getDb();
-    const today = new Date().toISOString().slice(0, 10);
+    const today = todayISO();
     const workouts = await db.workouts.toArray();
     const ids = new Set<ID>();
     for (const w of workouts) {
-      if (w.date === today && w.routineId != null) {
+      if (
+        w.date === today &&
+        w.routineId != null &&
+        w.completedAt != null
+      ) {
         ids.add(w.routineId);
       }
     }
     return ids;
   });
-}
-
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 export default function EntrenarPage() {
@@ -95,7 +99,11 @@ export default function EntrenarPage() {
   async function handleStartFromRoutine(routineId: ID) {
     setStartingId(routineId);
     try {
-      const id = await createWorkout({ date: todayISO(), routineId });
+      const today = todayISO();
+      const existing = await findInProgressWorkout(today, routineId);
+      const id =
+        existing?.id ??
+        (await createWorkout({ date: today, routineId }));
       router.push(`/entrenar/sesion?id=${id}`);
     } catch {
       setStartingId(null);
@@ -105,7 +113,9 @@ export default function EntrenarPage() {
   async function handleStartBlank() {
     setStartingId("blank");
     try {
-      const id = await createWorkout({ date: todayISO() });
+      const today = todayISO();
+      const existing = await findInProgressWorkout(today, undefined);
+      const id = existing?.id ?? (await createWorkout({ date: today }));
       router.push(`/entrenar/sesion?id=${id}`);
     } catch {
       setStartingId(null);

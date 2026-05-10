@@ -30,5 +30,18 @@ export class TuGymDB extends Dexie {
 
     // v3: added days field to routines (no index change needed)
     this.version(3).stores({});
+
+    // v4: workouts gain `completedAt`. Existing rows predate the in-progress
+    // concept, so backfill them as completed to preserve user history.
+    this.version(4)
+      .stores({ workouts: "++id, date, createdAt, completedAt" })
+      .upgrade((tx) =>
+        tx
+          .table<Workout, number>("workouts")
+          .toCollection()
+          .modify((w) => {
+            if (w.completedAt == null) w.completedAt = w.createdAt;
+          }),
+      );
   }
 }

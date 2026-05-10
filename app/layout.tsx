@@ -50,7 +50,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-dvh flex-col bg-zinc-50 text-zinc-950 dark:bg-black dark:text-zinc-50">
-        <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 pb-4 pt-[max(env(safe-area-inset-top),1rem)]">
+        <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 pt-[max(env(safe-area-inset-top),1rem)] pb-[calc(4rem+env(safe-area-inset-bottom)+1rem)]" style={{ scrollPaddingBottom: "calc(4rem + env(safe-area-inset-bottom) + 1rem)" }}>
           {children}
         </main>
         <BottomNav />

@@ -1,13 +1,15 @@
 "use client";
 
-const WEEKS = 13;
+import { useEffect, useRef } from "react";
+import { localDateISO, todayISO } from "@/lib/date";
+
+const WEEKS = 53;
 const DAYS = 7;
 const DAY_LABELS = ["", "L", "", "M", "", "V", ""];
 
 function getCalendarDates(): string[][] {
   const today = new Date();
   const todayDay = today.getDay(); // 0=dom
-  // End of current week (Saturday)
   const endDate = new Date(today);
   endDate.setDate(today.getDate() + (6 - todayDay));
 
@@ -18,7 +20,7 @@ function getCalendarDates(): string[][] {
     for (let day = 0; day < DAYS; day++) {
       const d = new Date(endDate);
       d.setDate(endDate.getDate() - week * 7 - (6 - day));
-      col.push(d.toISOString().slice(0, 10));
+      col.push(localDateISO(d));
     }
     grid.push(col);
   }
@@ -31,7 +33,6 @@ function getMonthLabels(grid: string[][]): { label: string; col: number }[] {
   let lastMonth = "";
 
   for (let col = 0; col < grid.length; col++) {
-    // Use the Monday (index 1) of each week to determine month
     const date = grid[col][1] ?? grid[col][0];
     const month = new Date(date + "T12:00:00").toLocaleDateString("es-AR", {
       month: "short",
@@ -53,14 +54,20 @@ interface ActivityCalendarProps {
 export function ActivityCalendar({ workoutDates }: ActivityCalendarProps) {
   const grid = getCalendarDates();
   const monthLabels = getMonthLabels(grid);
-  const todayISO = new Date().toISOString().slice(0, 10);
+  const today = todayISO();
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, []);
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
       <h2 className="mb-3 text-sm font-semibold">Actividad</h2>
 
-      <div className="overflow-x-auto">
-        <div className="inline-flex flex-col gap-0.5" style={{ minWidth: "fit-content" }}>
+      <div ref={scrollerRef} className="overflow-x-auto">
+        <div className="mx-auto flex w-fit flex-col gap-0.5">
           {/* Month labels */}
           <div className="flex gap-0.5 pl-6">
             {(() => {
@@ -89,7 +96,7 @@ export function ActivityCalendar({ workoutDates }: ActivityCalendarProps) {
               {grid.map((week, colIdx) => {
                 const date = week[dayIdx];
                 const isActive = workoutDates.has(date);
-                const isFuture = date > todayISO;
+                const isFuture = date > today;
 
                 return (
                   <span
