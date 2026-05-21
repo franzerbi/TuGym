@@ -4,6 +4,7 @@ export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: "/",
     name: "TuGym",
     short_name: "TuGym",
     description:
@@ -23,8 +24,14 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: "any",
       },
       {
-        src: "/icon",
-        sizes: "192x192",
+        src: "/icon1",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icon2",
+        sizes: "512x512",
         type: "image/png",
         purpose: "maskable",
       },
