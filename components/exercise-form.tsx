@@ -7,6 +7,7 @@ import type { MuscleGroup } from "@/types";
 export type ExerciseFormValues = {
   name: string;
   muscleGroup: MuscleGroup;
+  restSeconds?: number;
 };
 
 type Props = {
@@ -15,6 +16,16 @@ type Props = {
   onSubmit: (values: ExerciseFormValues) => Promise<void> | void;
   onCancel?: () => void;
 };
+
+const REST_PRESETS = [60, 90, 120, 180] as const;
+const REST_MIN = 10;
+const REST_MAX = 600;
+
+function sanitizeIntInput(value: string): string | null {
+  if (value === "") return "";
+  if (!/^[0-9]+$/.test(value)) return null;
+  return value.replace(/^0+(?=\d)/, "");
+}
 
 export function ExerciseForm({
   initialValues,
@@ -26,8 +37,23 @@ export function ExerciseForm({
   const [muscleGroup, setMuscleGroup] = useState<MuscleGroup>(
     initialValues?.muscleGroup ?? "pecho",
   );
+  const [restSeconds, setRestSeconds] = useState<string>(
+    initialValues?.restSeconds != null ? String(initialValues.restSeconds) : "",
+  );
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  function handleRestChange(value: string) {
+    const sanitized = sanitizeIntInput(value);
+    if (sanitized === null) return;
+    setRestSeconds(sanitized);
+    if (error) setError(null);
+  }
+
+  function applyPreset(p: number) {
+    setRestSeconds(String(p));
+    if (error) setError(null);
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,9 +65,21 @@ export function ExerciseForm({
       return;
     }
 
+    let rest: number | undefined;
+    if (restSeconds !== "") {
+      const parsed = Number.parseInt(restSeconds, 10);
+      if (!Number.isInteger(parsed) || parsed < REST_MIN || parsed > REST_MAX) {
+        setError(
+          `El descanso debe estar entre ${REST_MIN} y ${REST_MAX} segundos.`,
+        );
+        return;
+      }
+      rest = parsed;
+    }
+
     setSubmitting(true);
     try {
-      await onSubmit({ name: trimmed, muscleGroup });
+      await onSubmit({ name: trimmed, muscleGroup, restSeconds: rest });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Algo salió mal.");
       setSubmitting(false);
@@ -85,6 +123,52 @@ export function ExerciseForm({
               </button>
             );
           })}
+        </div>
+      </fieldset>
+
+      <fieldset className="flex flex-col gap-2">
+        <legend className="text-sm font-medium">Descanso entre series</legend>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={restSeconds}
+            onChange={(e) => handleRestChange(e.target.value)}
+            placeholder="Por defecto: 90s"
+            aria-label="Descanso entre series en segundos"
+            className="h-11 w-32 rounded-xl border border-zinc-300 bg-white px-3 text-base outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:focus:border-zinc-100"
+          />
+          <span className="text-sm text-zinc-600 dark:text-zinc-400">segundos</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {REST_PRESETS.map((p) => {
+            const selected = restSeconds === String(p);
+            return (
+              <button
+                key={p}
+                type="button"
+                onClick={() => applyPreset(p)}
+                aria-pressed={selected}
+                className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  selected
+                    ? "border-zinc-900 bg-zinc-900 text-zinc-50 dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-950"
+                    : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-600"
+                }`}
+              >
+                {p}s
+              </button>
+            );
+          })}
+          {restSeconds !== "" && (
+            <button
+              type="button"
+              onClick={() => setRestSeconds("")}
+              className="rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-600 underline-offset-2 hover:underline dark:text-zinc-400"
+            >
+              Usar default
+            </button>
+          )}
         </div>
       </fieldset>
 

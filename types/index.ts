@@ -48,6 +48,7 @@ export interface Exercise {
   id?: ID;
   name: string;
   muscleGroup: MuscleGroup;
+  restSeconds?: number;
   createdAt: number;
 }
 

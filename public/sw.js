@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'tugym-shell-v1';
+const SHELL_CACHE = 'tugym-shell-v2';
 const STATIC_CACHE = 'tugym-static-v1';
 
 const PRECACHE_URLS = [
@@ -12,6 +12,7 @@ const PRECACHE_URLS = [
   '/entrenar/editar-rutina',
   '/entrenar/sesion',
   '/peso',
+  '/settings',
   '/manifest.webmanifest',
 ];
 
@@ -130,3 +131,55 @@ async function staleWhileRevalidate(request, cacheName, ignoreSearch) {
     .catch(() => undefined);
   return cached || (await network);
 }
+
+// Rest timer: la app pide armar la notif al irse a background; al volver pide desarmarla.
+let restTimerTimeout = null;
+
+self.addEventListener('message', (event) => {
+  const data = event.data || {};
+  if (data.type === 'ARM_REST_NOTIF') {
+    if (restTimerTimeout) clearTimeout(restTimerTimeout);
+    const delay = data.endsAt - Date.now();
+    // Si ya pasó el endsAt, no armar: la app está volviendo a foreground y el disarm/banner se encarga.
+    if (delay <= 250) {
+      restTimerTimeout = null;
+      return;
+    }
+    restTimerTimeout = setTimeout(() => {
+      self.registration
+        .showNotification('Descanso terminado', {
+          body: data.exerciseName ? `Próxima serie: ${data.exerciseName}` : 'Volvé a la app',
+          tag: 'rest-timer',
+          renotify: false,
+          vibrate: [200, 100, 200],
+          icon: '/icon1',
+          badge: '/icon1',
+          data: { url: data.returnUrl || '/entrenar/sesion' },
+          silent: false,
+        })
+        .catch(() => undefined);
+      restTimerTimeout = null;
+    }, delay);
+  } else if (data.type === 'DISARM_REST_NOTIF') {
+    if (restTimerTimeout) {
+      clearTimeout(restTimerTimeout);
+      restTimerTimeout = null;
+    }
+    self.registration.getNotifications({ tag: 'rest-timer' }).then((ns) =>
+      ns.forEach((n) => n.close()),
+    );
+  }
+});
+
+self.addEventListener('notificationclick', (event) => {
+  if (event.notification.tag !== 'rest-timer') return;
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+      const existing = wins.find((w) => w.url.includes(url));
+      if (existing) return existing.focus();
+      return clients.openWindow(url);
+    }),
+  );
+});

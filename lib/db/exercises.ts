@@ -1,10 +1,29 @@
 import { getDb } from "./index";
 import type { Exercise, ID, MuscleGroup } from "@/types";
 
-export type ExerciseInput = Pick<Exercise, "name" | "muscleGroup">;
+export type ExerciseInput = Pick<
+  Exercise,
+  "name" | "muscleGroup" | "restSeconds"
+>;
+
+const REST_MIN = 10;
+const REST_MAX = 600;
 
 function normalizeName(name: string): string {
   return name.trim();
+}
+
+function normalizeRestSeconds(value: number | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  if (!Number.isFinite(value) || !Number.isInteger(value)) {
+    throw new Error("El descanso debe ser un número entero de segundos.");
+  }
+  if (value < REST_MIN || value > REST_MAX) {
+    throw new Error(
+      `El descanso debe estar entre ${REST_MIN} y ${REST_MAX} segundos.`,
+    );
+  }
+  return value;
 }
 
 export async function listExercises(filter?: {
@@ -27,11 +46,16 @@ export async function createExercise(input: ExerciseInput): Promise<ID> {
   const name = normalizeName(input.name);
   if (!name) throw new Error("El nombre no puede estar vacío.");
 
-  return getDb().exercises.add({
+  const rest = normalizeRestSeconds(input.restSeconds);
+
+  const row: Omit<Exercise, "id"> = {
     name,
     muscleGroup: input.muscleGroup,
     createdAt: Date.now(),
-  });
+  };
+  if (rest !== undefined) row.restSeconds = rest;
+
+  return getDb().exercises.add(row);
 }
 
 export async function updateExercise(
@@ -45,6 +69,9 @@ export async function updateExercise(
     next.name = name;
   }
   if (patch.muscleGroup !== undefined) next.muscleGroup = patch.muscleGroup;
+  if ("restSeconds" in patch) {
+    next.restSeconds = normalizeRestSeconds(patch.restSeconds);
+  }
 
   await getDb().exercises.update(id, next);
 }
