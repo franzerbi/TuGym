@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -46,7 +46,18 @@ export default function Home() {
   const lastWorkout = useLastWorkout();
   const [startingId, setStartingId] = useState<ID | null>(null);
 
-  const todayDay = new Date().getDay();
+  const [todayDay, setTodayDay] = useState(() => new Date().getDay());
+
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        setTodayDay(new Date().getDay());
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
+
   const todayRoutine = (routines ?? []).find((r) =>
     r.days?.includes(todayDay),
   );

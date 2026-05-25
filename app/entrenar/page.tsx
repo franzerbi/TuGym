@@ -124,11 +124,20 @@ export default function EntrenarPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-5 py-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">Entrenar</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Elegí una rutina o empezá de cero.
-        </p>
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Entrenar</h1>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+            Elegí una rutina o empezá de cero.
+          </p>
+        </div>
+        <Link
+          href="/entrenar/nueva-rutina"
+          aria-label="Crear rutina"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-zinc-50 transition-colors hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
+        >
+          <Plus size={20} aria-hidden="true" />
+        </Link>
       </header>
 
       {/* Routines section */}
@@ -136,15 +145,7 @@ export default function EntrenarPage() {
         <RoutinesSkeleton />
       ) : routines.length > 0 ? (
         <section className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Mis rutinas</h2>
-            <Link
-              href="/entrenar/nueva-rutina"
-              className="text-xs font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-            >
-              + Nueva
-            </Link>
-          </div>
+          <h2 className="text-sm font-semibold">Mis rutinas</h2>
           {sortedRoutines.map(({ routine, isToday }) => {
             const isDone = doneRoutineIds?.has(routine.id!) ?? false;
             return (
