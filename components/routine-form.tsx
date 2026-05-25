@@ -109,7 +109,7 @@ export function RoutineForm({
                 className={`flex size-10 items-center justify-center rounded-full text-sm font-medium transition-colors ${
                   selected
                     ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950"
-                    : "border border-zinc-300 text-zinc-500 hover:border-zinc-400 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600"
+                    : "border border-zinc-300 text-zinc-600 hover:border-zinc-400 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600"
                 }`}
               >
                 {label}
@@ -141,19 +141,19 @@ export function RoutineForm({
                       {exercise?.name ?? "Ejercicio eliminado"}
                     </span>
                     {exercise && (
-                      <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                      <span className="text-xs text-zinc-600 dark:text-zinc-400">
                         {MUSCLE_GROUP_LABELS[exercise.muscleGroup]}
                       </span>
                     )}
                   </span>
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                  <span className="text-xs text-zinc-500 dark:text-zinc-500">
                     {index + 1}
                   </span>
                   <button
                     type="button"
                     onClick={() => handleRemoveExercise(id)}
                     aria-label={`Quitar ${exercise?.name ?? "ejercicio"}`}
-                    className="flex size-7 items-center justify-center rounded text-zinc-400 transition-colors hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400"
+                    className="flex size-7 items-center justify-center rounded text-zinc-500 transition-colors hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400"
                   >
                     <Trash2 size={14} aria-hidden="true" />
                   </button>
@@ -171,7 +171,7 @@ export function RoutineForm({
                 type="button"
                 onClick={() => setShowPicker(false)}
                 aria-label="Cerrar"
-                className="flex size-7 items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                className="flex size-7 items-center justify-center rounded-full text-zinc-600 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-800"
               >
                 <X size={14} aria-hidden="true" />
               </button>

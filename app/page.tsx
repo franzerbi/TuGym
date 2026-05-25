@@ -71,7 +71,7 @@ export default function Home() {
     <div className="flex flex-1 flex-col gap-6 py-6">
       {/* Greeting */}
       <header>
-        <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
           {formatGreeting()}
         </p>
         <h1 className="text-3xl font-bold tracking-tight">Hola, Fran</h1>
@@ -85,7 +85,7 @@ export default function Home() {
           type="button"
           onClick={() => handleStartRoutine(todayRoutine.id!)}
           disabled={startingId !== null}
-          className="flex flex-col gap-2 rounded-2xl border border-zinc-900 bg-white p-5 text-left transition-colors hover:bg-zinc-50 disabled:opacity-60 dark:border-zinc-100 dark:bg-zinc-950 dark:hover:bg-zinc-900"
+          className="flex flex-col gap-2 rounded-2xl border border-zinc-900 bg-white p-5 text-left transition-all hover:bg-zinc-50 active:scale-[0.98] disabled:opacity-60 dark:border-zinc-100 dark:bg-zinc-950 dark:hover:bg-zinc-900"
         >
           <span className="flex items-center gap-2">
             <PlayCircle
@@ -93,12 +93,12 @@ export default function Home() {
               className="text-zinc-700 dark:text-zinc-300"
               aria-hidden="true"
             />
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
               Rutina de hoy
             </span>
           </span>
           <span className="text-xl font-bold">{todayRoutine.name}</span>
-          <span className="text-sm text-zinc-500 dark:text-zinc-400">
+          <span className="text-sm text-zinc-600 dark:text-zinc-400">
             {todayRoutine.exerciseIds.length} ejercicio
             {todayRoutine.exerciseIds.length !== 1 ? "s" : ""} — Toca para
             empezar
@@ -106,7 +106,7 @@ export default function Home() {
         </button>
       ) : (
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
-          <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
             Hoy no tenés rutina asignada — descansá o{" "}
             <Link
               href="/entrenar"
@@ -124,9 +124,9 @@ export default function Home() {
         {/* Last workout */}
         <Link
           href="/entrenar"
-          className="flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
+          className="flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300 active:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:active:bg-zinc-900"
         >
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-500">
             Último entreno
           </span>
           {lastWorkout === undefined ? (
@@ -136,21 +136,21 @@ export default function Home() {
               <span className="text-base font-bold">
                 {formatRelativeDate(lastWorkout.date)}
               </span>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs text-zinc-600 dark:text-zinc-400">
                 {lastWorkout.exerciseCount} ej · {lastWorkout.setCount} series
               </span>
             </>
           ) : (
-            <span className="text-sm text-zinc-400">Sin datos</span>
+            <span className="text-sm text-zinc-600 dark:text-zinc-400">Sin datos</span>
           )}
         </Link>
 
         {/* Last weight */}
         <Link
           href="/peso"
-          className="flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
+          className="flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300 active:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:active:bg-zinc-900"
         >
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-500">
             Último peso
           </span>
           {bodyWeights === undefined ? (
@@ -160,12 +160,12 @@ export default function Home() {
               <span className="text-base font-bold">
                 {lastWeight.weightKg} kg
               </span>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs text-zinc-600 dark:text-zinc-400">
                 {formatRelativeDate(lastWeight.date)}
               </span>
             </>
           ) : (
-            <span className="text-sm text-zinc-400">Sin datos</span>
+            <span className="text-sm text-zinc-600 dark:text-zinc-400">Sin datos</span>
           )}
         </Link>
       </div>
@@ -176,11 +176,11 @@ export default function Home() {
           <Link
             key={href}
             href={href}
-            className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
+            className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 active:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:active:bg-zinc-900"
           >
             <Icon
               size={18}
-              className="text-zinc-400 dark:text-zinc-500"
+              className="text-zinc-500 dark:text-zinc-500"
               aria-hidden="true"
             />
             <span className="flex-1 text-sm font-semibold">{label}</span>

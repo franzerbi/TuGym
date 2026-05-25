@@ -12,7 +12,7 @@ export default function EditarRutinaPage() {
   return (
     <Suspense
       fallback={
-        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="py-6 text-sm text-zinc-600 dark:text-zinc-400">
           Cargando...
         </p>
       }
@@ -59,7 +59,7 @@ function EditarRutinaContent() {
       </header>
 
       {routine === undefined ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Cargando...</p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">Cargando...</p>
       ) : routine === null ? (
         <NotFoundState />
       ) : (

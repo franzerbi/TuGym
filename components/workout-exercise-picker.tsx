@@ -24,9 +24,9 @@ export function WorkoutExercisePicker({ onSelect, selectedIds = [] }: Props) {
       <MuscleGroupFilter value={filter} onChange={setFilter} />
 
       {exercises === undefined ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Cargando...</p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">Cargando...</p>
       ) : exercises.length === 0 ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
           No hay ejercicios en este grupo.
         </p>
       ) : (
@@ -49,7 +49,7 @@ export function WorkoutExercisePicker({ onSelect, selectedIds = [] }: Props) {
                 >
                   <span className="flex flex-col">
                     <span className="font-medium">{ex.name}</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <span className="text-xs text-zinc-600 dark:text-zinc-400">
                       {MUSCLE_GROUP_LABELS[ex.muscleGroup]}
                     </span>
                   </span>

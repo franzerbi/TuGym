@@ -59,7 +59,7 @@ export default function PesoPage() {
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                   range === r.key
                     ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950"
-                    : "border border-zinc-300 text-zinc-500 hover:border-zinc-400 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600"
+                    : "border border-zinc-300 text-zinc-600 hover:border-zinc-400 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600"
                 }`}
               >
                 {r.label}
@@ -69,7 +69,7 @@ export default function PesoPage() {
           <WeightChart entries={filteredEntries!} />
         </>
       ) : entries.length === 1 ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
           Agregá al menos 2 registros para ver el gráfico.
         </p>
       ) : null}
@@ -159,7 +159,7 @@ function WeightForm() {
 
       <label className="flex flex-col gap-1.5">
         <span className="text-sm font-medium">
-          Notas <span className="text-zinc-400">(opcional)</span>
+          Notas <span className="text-zinc-600 dark:text-zinc-400">(opcional)</span>
         </span>
         <input
           type="text"
@@ -264,7 +264,7 @@ function WeightList({ entries }: { entries: { id?: number; date: string; weightK
               <span className="text-base font-semibold">
                 {entry.weightKg} kg
               </span>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs text-zinc-600 dark:text-zinc-400">
                 {formatLongDate(entry.date)}
                 {entry.notes ? ` · ${entry.notes}` : ""}
               </span>
@@ -273,7 +273,7 @@ function WeightList({ entries }: { entries: { id?: number; date: string; weightK
               type="button"
               onClick={() => handleDelete(entry.id, entry.weightKg)}
               aria-label={`Eliminar registro de ${entry.weightKg} kg`}
-              className="flex size-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400"
+              className="flex size-9 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-zinc-400 dark:hover:bg-red-950 dark:hover:text-red-400"
             >
               <Trash2 size={16} aria-hidden="true" />
             </button>

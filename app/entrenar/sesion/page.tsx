@@ -17,7 +17,7 @@ export default function SesionPage() {
   return (
     <Suspense
       fallback={
-        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="py-6 text-sm text-zinc-600 dark:text-zinc-400">
           Cargando...
         </p>
       }
@@ -59,7 +59,7 @@ function SesionContent() {
 
   if (workout === undefined || sets === undefined || allExercises === undefined) {
     return (
-      <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="py-6 text-sm text-zinc-600 dark:text-zinc-400">
         Cargando...
       </p>
     );
@@ -125,7 +125,7 @@ function SesionContent() {
         </Link>
         <div className="flex-1">
           <h1 className="text-2xl font-bold tracking-tight">Entrenamiento</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             {formatDate(workout.date)}
           </p>
         </div>
@@ -164,7 +164,7 @@ function SesionContent() {
               type="button"
               onClick={() => setShowPicker(false)}
               aria-label="Cerrar"
-              className="flex size-8 items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              className="flex size-8 items-center justify-center rounded-full text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
             >
               <X size={16} aria-hidden="true" />
             </button>
@@ -192,7 +192,7 @@ function SesionContent() {
         <button
           type="button"
           onClick={() => setShowPicker(true)}
-          className="flex items-center justify-center gap-2 self-start rounded-lg px-3 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+          className="flex items-center justify-center gap-2 self-start rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
         >
           <Plus size={16} aria-hidden="true" />
           Agregar ejercicio
@@ -223,7 +223,7 @@ function SesionContent() {
           {finishing ? "Finalizando..." : "Finalizar entrenamiento"}
         </button>
         {sets.length === 0 && (
-          <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-center text-xs text-zinc-600 dark:text-zinc-400">
             Agregá al menos una serie para finalizar.
           </p>
         )}
@@ -253,12 +253,12 @@ function ExerciseGroup({
       <div className="flex items-center gap-2">
         <Dumbbell
           size={16}
-          className="text-zinc-400 dark:text-zinc-500"
+          className="text-zinc-500 dark:text-zinc-500"
           aria-hidden="true"
         />
         <span className="font-semibold">{name}</span>
         {muscleGroup && (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+          <span className="text-xs text-zinc-600 dark:text-zinc-400">
             · {muscleGroup}
           </span>
         )}
@@ -267,7 +267,7 @@ function ExerciseGroup({
       {/* Sets table */}
       {sets.length > 0 && (
         <div className="flex flex-col gap-1">
-          <div className="grid grid-cols-[2rem_1fr_1fr_2rem] gap-2 px-1 text-xs font-medium text-zinc-400 dark:text-zinc-500">
+          <div className="grid grid-cols-[2rem_1fr_1fr_2rem] gap-2 px-1 text-xs font-medium text-zinc-500 dark:text-zinc-500">
             <span>#</span>
             <span>Kg</span>
             <span>Reps</span>
@@ -278,7 +278,7 @@ function ExerciseGroup({
               key={s.id}
               className="grid grid-cols-[2rem_1fr_1fr_2rem] items-center gap-2 rounded-lg px-1 py-1.5 text-sm"
             >
-              <span className="text-zinc-400 dark:text-zinc-500">
+              <span className="text-zinc-500 dark:text-zinc-500">
                 {s.setNumber}
               </span>
               <span className="font-medium">{s.weightKg}</span>

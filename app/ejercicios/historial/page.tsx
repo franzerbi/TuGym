@@ -23,7 +23,7 @@ export default function HistorialPage() {
   return (
     <Suspense
       fallback={
-        <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="py-6 text-sm text-zinc-600 dark:text-zinc-400">
           Cargando...
         </p>
       }
@@ -52,7 +52,7 @@ function HistorialContent() {
 
   if (exercise === undefined || history === undefined) {
     return (
-      <p className="py-6 text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="py-6 text-sm text-zinc-600 dark:text-zinc-400">
         Cargando...
       </p>
     );
@@ -80,14 +80,14 @@ function HistorialContent() {
         </Link>
         <div className="flex-1">
           <h1 className="text-2xl font-bold tracking-tight">{exercise.name}</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             {MUSCLE_GROUP_LABELS[exercise.muscleGroup]}
           </p>
         </div>
         <Link
           href={`/ejercicios/editar?id=${id}`}
           aria-label="Editar ejercicio"
-          className="flex size-10 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800/60"
+          className="flex size-10 items-center justify-center rounded-full text-zinc-600 transition-colors hover:bg-zinc-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800/60"
         >
           <Pencil size={18} aria-hidden="true" />
         </Link>
@@ -163,7 +163,7 @@ function HistorialContent() {
                         key={s.id}
                         className="flex gap-4 text-sm text-zinc-600 dark:text-zinc-400"
                       >
-                        <span className="w-8 text-zinc-400 dark:text-zinc-500">
+                        <span className="w-8 text-zinc-500 dark:text-zinc-500">
                           #{s.setNumber}
                         </span>
                         <span className="font-medium text-zinc-900 dark:text-zinc-100">
