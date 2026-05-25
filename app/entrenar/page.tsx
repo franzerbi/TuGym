@@ -140,7 +140,7 @@ export default function EntrenarPage() {
             <h2 className="text-sm font-semibold">Mis rutinas</h2>
             <Link
               href="/entrenar/nueva-rutina"
-              className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+              className="text-xs font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
             >
               + Nueva
             </Link>
@@ -162,7 +162,7 @@ export default function EntrenarPage() {
                 type="button"
                 onClick={() => handleStartFromRoutine(routine.id!)}
                 disabled={startingId !== null}
-                className="flex flex-1 items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-l-2xl disabled:opacity-60"
+                className="flex flex-1 items-center gap-3 px-4 py-3 text-left transition-all hover:bg-zinc-50 active:scale-[0.98] dark:hover:bg-zinc-900 rounded-l-2xl disabled:opacity-60"
               >
                 {isDone ? (
                   <CheckCircle
@@ -173,7 +173,7 @@ export default function EntrenarPage() {
                 ) : (
                   <PlayCircle
                     size={20}
-                    className="shrink-0 text-zinc-400 dark:text-zinc-500"
+                    className="shrink-0 text-zinc-500 dark:text-zinc-500"
                     aria-hidden="true"
                   />
                 )}
@@ -186,7 +186,7 @@ export default function EntrenarPage() {
                       </span>
                     )}
                   </span>
-                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                  <span className="text-xs text-zinc-600 dark:text-zinc-400">
                     {routine.exerciseIds.length} ejercicio
                     {routine.exerciseIds.length !== 1 ? "s" : ""}
                   </span>
@@ -195,7 +195,7 @@ export default function EntrenarPage() {
               <Link
                 href={`/entrenar/editar-rutina?id=${routine.id}`}
                 aria-label={`Editar ${routine.name}`}
-                className="flex size-10 items-center justify-center text-zinc-400 transition-colors hover:text-zinc-700 dark:hover:text-zinc-200"
+                className="flex size-10 items-center justify-center text-zinc-500 transition-colors hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200"
               >
                 <Pencil size={15} aria-hidden="true" />
               </Link>
@@ -239,19 +239,19 @@ export default function EntrenarPage() {
               <li key={s.id}>
                 <Link
                   href={`/entrenar/sesion?id=${s.id}`}
-                  className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 active:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:active:bg-zinc-900"
                 >
                   <span className="flex flex-col gap-0.5">
                     <span className="text-base font-semibold">
                       {formatDate(s.date)}
                     </span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <span className="text-xs text-zinc-600 dark:text-zinc-400">
                       {s.setCount === 0
                         ? "Sin series"
                         : `${s.exerciseCount} ejercicio${s.exerciseCount !== 1 ? "s" : ""} · ${s.setCount} serie${s.setCount !== 1 ? "s" : ""}`}
                     </span>
                     {s.exerciseNames.length > 0 && (
-                      <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                      <span className="text-xs text-zinc-500 dark:text-zinc-500">
                         {s.exerciseNames.join(", ")}
                       </span>
                     )}

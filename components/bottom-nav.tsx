@@ -45,10 +45,10 @@ export function BottomNav() {
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors ${
+                className={`flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors active:bg-zinc-100 dark:active:bg-zinc-900 ${
                   active
                     ? "text-zinc-950 dark:text-zinc-50"
-                    : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                    : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
                 }`}
               >
                 <Icon

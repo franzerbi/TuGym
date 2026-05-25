@@ -77,7 +77,7 @@ export function ActivityCalendar({ workoutDates }: ActivityCalendarProps) {
                 cells.push(
                   <span
                     key={col}
-                    className="size-3.5 text-center text-[9px] leading-[14px] text-zinc-400 dark:text-zinc-500"
+                    className="size-3.5 text-center text-[9px] leading-[14px] text-zinc-600 dark:text-zinc-500"
                   >
                     {label ? label.label.slice(0, 3) : ""}
                   </span>,
@@ -90,7 +90,7 @@ export function ActivityCalendar({ workoutDates }: ActivityCalendarProps) {
           {/* Grid rows */}
           {Array.from({ length: DAYS }).map((_, dayIdx) => (
             <div key={dayIdx} className="flex items-center gap-0.5">
-              <span className="w-5 text-right text-[9px] text-zinc-400 dark:text-zinc-500 mr-1">
+              <span className="w-5 text-right text-[9px] text-zinc-600 dark:text-zinc-500 mr-1">
                 {DAY_LABELS[dayIdx]}
               </span>
               {grid.map((week, colIdx) => {
