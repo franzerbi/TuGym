@@ -43,5 +43,9 @@ export class TuGymDB extends Dexie {
             if (w.completedAt == null) w.completedAt = w.createdAt;
           }),
       );
+
+    // v5: exercises gain optional `restSeconds`. No index change, no backfill
+    // (undefined falls back to the global default at runtime).
+    this.version(5).stores({});
   }
 }

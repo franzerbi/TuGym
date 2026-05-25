@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Dumbbell, PlayCircle, Scale, ChevronRight } from "lucide-react";
+import { Dumbbell, PlayCircle, Scale, ChevronRight, Settings } from "lucide-react";
 import { getDb } from "@/lib/db/index";
 import { createWorkout, findInProgressWorkout } from "@/lib/db/workouts";
 import { useRoutines } from "@/lib/hooks/use-routines";
@@ -70,11 +70,20 @@ export default function Home() {
   return (
     <div className="flex flex-1 flex-col gap-6 py-6">
       {/* Greeting */}
-      <header>
-        <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-          {formatGreeting()}
-        </p>
-        <h1 className="text-3xl font-bold tracking-tight">Hola, Fran</h1>
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+            {formatGreeting()}
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight">Hola, Fran</h1>
+        </div>
+        <Link
+          href="/settings"
+          aria-label="Ajustes"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full border border-zinc-300 bg-white text-zinc-700 transition-colors hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-600"
+        >
+          <Settings size={20} aria-hidden="true" />
+        </Link>
       </header>
 
       {/* Today's routine */}

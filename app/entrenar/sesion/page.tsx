@@ -141,15 +141,10 @@ function SesionContent() {
         return (
           <ExerciseGroup
             key={exerciseId}
-            name={exercise?.name ?? "Ejercicio eliminado"}
-            muscleGroup={
-              exercise
-                ? MUSCLE_GROUP_LABELS[exercise.muscleGroup]
-                : undefined
-            }
+            exercise={exercise}
+            fallbackName="Ejercicio eliminado"
             sets={exerciseSets}
             workoutId={id}
-            exerciseId={exerciseId}
             onDeleteSet={handleDeleteSet}
           />
         );
@@ -233,20 +228,22 @@ function SesionContent() {
 }
 
 function ExerciseGroup({
-  name,
-  muscleGroup,
+  exercise,
+  fallbackName,
   sets,
   workoutId,
-  exerciseId,
   onDeleteSet,
 }: {
-  name: string;
-  muscleGroup?: string;
+  exercise: Exercise | undefined;
+  fallbackName: string;
   sets: WorkoutSet[];
   workoutId: ID;
-  exerciseId: ID;
   onDeleteSet: (id: ID) => void;
 }) {
+  const name = exercise?.name ?? fallbackName;
+  const muscleGroup = exercise
+    ? MUSCLE_GROUP_LABELS[exercise.muscleGroup]
+    : undefined;
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
       {/* Exercise header */}
@@ -297,7 +294,9 @@ function ExerciseGroup({
       )}
 
       {/* Add set input */}
-      <WorkoutSetInput workoutId={workoutId} exerciseId={exerciseId} />
+      {exercise && (
+        <WorkoutSetInput workoutId={workoutId} exercise={exercise} />
+      )}
     </div>
   );
 }

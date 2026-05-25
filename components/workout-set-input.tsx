@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Check, Minus, Plus } from "lucide-react";
+import { Check, Clock, Minus, Plus } from "lucide-react";
 import {
   addSet,
   getLastSetForExercise,
@@ -12,11 +12,14 @@ import {
   sanitizeDecimalInput,
   sanitizeIntInput,
 } from "@/lib/number";
-import type { ID } from "@/types";
+import { initAudioContext } from "@/lib/audio/beep";
+import { useRestTimer } from "@/lib/hooks/use-rest-timer";
+import { useSettings } from "@/lib/settings";
+import type { Exercise, ID } from "@/types";
 
 type Props = {
   workoutId: ID;
-  exerciseId: ID;
+  exercise: Exercise;
 };
 
 const WEIGHT_STEP = 2.5;
@@ -27,7 +30,8 @@ function formatWeight(n: number): string {
   return String(rounded).replace(".", ",");
 }
 
-export function WorkoutSetInput({ workoutId, exerciseId }: Props) {
+export function WorkoutSetInput({ workoutId, exercise }: Props) {
+  const exerciseId = exercise.id!;
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -35,6 +39,9 @@ export function WorkoutSetInput({ workoutId, exerciseId }: Props) {
   const [touched, setTouched] = useState(false);
   const containerRef = useRef<HTMLFormElement>(null);
   const prefilled = useRef(false);
+
+  const settings = useSettings();
+  const restTimer = useRestTimer();
 
   useEffect(() => {
     if (prefilled.current) return;
@@ -111,6 +118,9 @@ export function WorkoutSetInput({ workoutId, exerciseId }: Props) {
       return;
     }
 
+    // El primer "Confirmar" es el gesto del usuario que habilita audio en iOS.
+    initAudioContext();
+
     setSubmitting(true);
     setError(null);
     try {
@@ -129,6 +139,15 @@ export function WorkoutSetInput({ workoutId, exerciseId }: Props) {
         navigator.vibrate(20);
       }
       setTouched(false);
+
+      if (settings.restTimer.autoStart) {
+        const restSeconds =
+          exercise.restSeconds ?? settings.restTimer.defaultSeconds;
+        restTimer.start({
+          restSeconds,
+          exerciseName: exercise.name,
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo guardar la serie.");
     } finally {
@@ -138,6 +157,19 @@ export function WorkoutSetInput({ workoutId, exerciseId }: Props) {
 
   const showWeightError = touched && !weightValid;
   const showRepsError = touched && !repsValid;
+
+  const manualButtonVisible =
+    !settings.restTimer.autoStart && restTimer.state === "idle";
+
+  function handleManualStart() {
+    initAudioContext();
+    const restSeconds =
+      exercise.restSeconds ?? settings.restTimer.defaultSeconds;
+    restTimer.start({
+      restSeconds,
+      exerciseName: exercise.name,
+    });
+  }
 
   return (
     <form
@@ -241,6 +273,17 @@ export function WorkoutSetInput({ workoutId, exerciseId }: Props) {
         <Check size={18} aria-hidden="true" />
         {submitting ? "Guardando..." : "Confirmar serie"}
       </button>
+
+      {manualButtonVisible && (
+        <button
+          type="button"
+          onClick={handleManualStart}
+          className="flex h-11 items-center justify-center gap-2 rounded-xl border border-zinc-300 px-4 text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-900"
+        >
+          <Clock size={16} aria-hidden="true" />
+          Iniciar descanso
+        </button>
+      )}
     </form>
   );
 }

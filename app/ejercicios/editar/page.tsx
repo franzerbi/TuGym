@@ -78,6 +78,7 @@ function EditarContent() {
             initialValues={{
               name: exercise.name,
               muscleGroup: exercise.muscleGroup,
+              restSeconds: exercise.restSeconds,
             }}
             submitLabel="Guardar cambios"
             onSubmit={async (values) => {
