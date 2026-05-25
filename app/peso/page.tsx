@@ -152,6 +152,7 @@ function WeightForm() {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
+            max={todayISO()}
             className="rounded-xl border border-zinc-300 bg-white px-4 py-3 text-base outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:focus:border-zinc-100"
           />
         </label>

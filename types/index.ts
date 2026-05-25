@@ -78,7 +78,7 @@ export interface Routine {
   createdAt: number;
 }
 
-export const DAY_LABELS_SHORT = ["D", "L", "M", "M", "J", "V", "S"] as const;
+export const DAY_LABELS_SHORT = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"] as const;
 
 export interface BodyWeight {
   id?: ID;

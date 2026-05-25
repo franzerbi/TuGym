@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { GripVertical, Plus, Trash2, X } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { useExercises } from "@/lib/hooks/use-exercises";
 import { WorkoutExercisePicker } from "@/components/workout-exercise-picker";
 import { DAY_LABELS_SHORT, MUSCLE_GROUP_LABELS } from "@/types";
@@ -131,11 +131,6 @@ export function RoutineForm({
                   key={id}
                   className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2.5 dark:border-zinc-800 dark:bg-zinc-950"
                 >
-                  <GripVertical
-                    size={14}
-                    className="shrink-0 text-zinc-300 dark:text-zinc-600"
-                    aria-hidden="true"
-                  />
                   <span className="flex flex-1 flex-col">
                     <span className="text-sm font-medium">
                       {exercise?.name ?? "Ejercicio eliminado"}

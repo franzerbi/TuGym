@@ -20,7 +20,7 @@ export function MuscleGroupFilter({ value, onChange }: Props) {
     <div
       role="radiogroup"
       aria-label="Filtrar por grupo muscular"
-      className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="flex flex-wrap gap-2"
     >
       {OPTIONS.map((option) => {
         const selected = value === option.value;
@@ -30,7 +30,7 @@ export function MuscleGroupFilter({ value, onChange }: Props) {
             role="radio"
             aria-checked={selected}
             onClick={() => onChange(option.value)}
-            className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
               selected
                 ? "border-zinc-900 bg-zinc-900 text-zinc-50 dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-950"
                 : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-600"
