@@ -144,6 +144,17 @@ export default function SettingsPage() {
     setPushStatus("local_only");
   }
 
+  async function handleEnableServerPush() {
+    setPushOptedOut(false);
+    if (!isPushAvailable()) {
+      setPushStatus("local_only");
+      return;
+    }
+    setPushStatus("working");
+    const res: EnsureSubscribedResult = await ensureSubscribed();
+    setPushStatus(res.subscribed ? "subscribed" : "local_only");
+  }
+
   return (
     <div className="flex flex-1 flex-col gap-5 py-6">
       <header className="flex items-center gap-3">
@@ -253,6 +264,7 @@ export default function SettingsPage() {
               pushStatus={pushStatus}
               onRequest={handleRequestNotif}
               onDisablePush={handleDisablePush}
+              onEnableServerPush={handleEnableServerPush}
             />
           </div>
         </div>
@@ -311,11 +323,13 @@ function NotifControl({
   pushStatus,
   onRequest,
   onDisablePush,
+  onEnableServerPush,
 }: {
   state: NotifState;
   pushStatus: "idle" | "working" | "subscribed" | "local_only";
   onRequest: () => void;
   onDisablePush: () => void;
+  onEnableServerPush: () => void;
 }) {
   if (state === "granted") {
     const label =
@@ -326,7 +340,7 @@ function NotifControl({
           : "Activadas (solo local)";
     const helper =
       pushStatus === "local_only"
-        ? "El server no respondió. Los avisos en background pueden no llegar si la app se cierra."
+        ? "Solo recibís avisos con la app abierta. Activá los avisos en background para que lleguen con el celu bloqueado."
         : null;
     return (
       <div className="flex flex-col gap-2">
@@ -346,6 +360,15 @@ function NotifControl({
             className="flex h-11 w-fit items-center rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 transition-colors hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-600"
           >
             Desactivar notificaciones
+          </button>
+        )}
+        {pushStatus === "local_only" && (
+          <button
+            type="button"
+            onClick={onEnableServerPush}
+            className="flex h-11 w-fit items-center rounded-xl bg-zinc-900 px-4 text-sm font-semibold text-zinc-50 transition-colors hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
+          >
+            Activar avisos en background
           </button>
         )}
       </div>

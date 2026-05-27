@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'tugym-shell-v3';
+const SHELL_CACHE = 'tugym-shell-v4';
 const STATIC_CACHE = 'tugym-static-v1';
 
 const PRECACHE_URLS = [
@@ -146,7 +146,7 @@ self.addEventListener('push', (event) => {
       .showNotification(data.title || 'Descanso terminado', {
         body: data.body || 'Próxima serie',
         tag: 'rest-timer',
-        renotify: false,
+        renotify: true,
         vibrate: [200, 100, 200],
         icon: '/icon1',
         badge: '/icon1',
@@ -185,7 +185,7 @@ self.addEventListener('message', (event) => {
         .showNotification('Descanso terminado', {
           body: data.exerciseName ? `Próxima serie: ${data.exerciseName}` : 'Volvé a la app',
           tag: 'rest-timer',
-          renotify: false,
+          renotify: true,
           vibrate: [200, 100, 200],
           icon: '/icon1',
           badge: '/icon1',

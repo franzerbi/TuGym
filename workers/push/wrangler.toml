@@ -11,7 +11,7 @@ tag = "v1"
 new_sqlite_classes = ["DeviceDO"]
 
 [vars]
-ALLOWED_ORIGIN = "https://tugym.vercel.app"
+ALLOWED_ORIGIN = "https://tu-gym.vercel.app"
 VAPID_SUBJECT = "mailto:franciscozerbino1@gmail.com"
 
 # Secrets set via `wrangler secret put`:
