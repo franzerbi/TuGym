@@ -15,6 +15,12 @@ import {
   sendDisarmMessage,
   type ArmPayload,
 } from "@/lib/notifications";
+import {
+  armPush,
+  disarmPush,
+  ensureSubscribed,
+  isPushAvailable,
+} from "@/lib/push-client";
 import { getSettings } from "@/lib/settings";
 
 export type RestTimerState = "idle" | "running" | "finished";
@@ -83,6 +89,29 @@ function clearPersisted(): void {
   }
 }
 
+function canUseServerPush(): boolean {
+  if (typeof window === "undefined") return false;
+  if (!("Notification" in window)) return false;
+  return isPushAvailable() && Notification.permission === "granted";
+}
+
+function armNotif(payload: ArmPayload): void {
+  if (canUseServerPush()) {
+    void armPush(payload).then((ok) => {
+      if (!ok) sendArmMessage(payload);
+    });
+    return;
+  }
+  sendArmMessage(payload);
+}
+
+function disarmNotif(): void {
+  if (canUseServerPush()) {
+    void disarmPush();
+  }
+  sendDisarmMessage();
+}
+
 function readInitial(): PersistedTimer | null {
   const persisted = readPersisted();
   if (!persisted) return null;
@@ -122,7 +151,7 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
       finishHandledRef.current = true;
       setState("finished");
       clearPersisted();
-      sendDisarmMessage();
+      disarmNotif();
       if (opts.announce) {
         if (
           typeof navigator !== "undefined" &&
@@ -176,7 +205,7 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
           exerciseName: name,
           returnUrl: RETURN_URL,
         };
-        sendArmMessage(payload);
+        armNotif(payload);
       }
     },
     [clearFinishedTimeout],
@@ -190,7 +219,7 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
     setTotalMs(0);
     setExerciseName(undefined);
     clearPersisted();
-    sendDisarmMessage();
+    disarmNotif();
   }, [clearFinishedTimeout]);
 
   const addSeconds = useCallback(
@@ -210,7 +239,7 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
         typeof document !== "undefined" &&
         document.visibilityState === "hidden"
       ) {
-        sendArmMessage({
+        armNotif({
           endsAt: nextEndsAt,
           exerciseName,
           returnUrl: RETURN_URL,
@@ -242,14 +271,14 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
       if (typeof document === "undefined") return;
       if (document.visibilityState === "hidden") {
         if (state === "running" && endsAt !== null) {
-          sendArmMessage({
+          armNotif({
             endsAt,
             exerciseName,
             returnUrl: RETURN_URL,
           });
         }
       } else {
-        sendDisarmMessage();
+        disarmNotif();
         if (state === "running" && endsAt !== null) {
           const t = Date.now();
           setNow(t);
@@ -263,6 +292,23 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
     document.addEventListener("visibilitychange", onVisibility);
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, [state, endsAt, exerciseName, transitionToFinished]);
+
+  // El SW avisa cuando el browser rotó la subscription (iOS/Safari principalmente).
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) {
+      return;
+    }
+    function onSwMessage(ev: MessageEvent) {
+      const data = ev.data as { type?: string } | null;
+      if (data && data.type === "PUSH_SUBSCRIPTION_CHANGED") {
+        void ensureSubscribed();
+      }
+    }
+    navigator.serviceWorker.addEventListener("message", onSwMessage);
+    return () => {
+      navigator.serviceWorker.removeEventListener("message", onSwMessage);
+    };
+  }, []);
 
   // cleanup global
   useEffect(() => {

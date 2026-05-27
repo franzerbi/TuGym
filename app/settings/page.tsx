@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getSettings, setSettings, useSettings } from "@/lib/settings";
@@ -9,10 +9,36 @@ import {
   requestNotifPermission,
   type NotifState,
 } from "@/lib/notifications";
+import {
+  ensureSubscribed,
+  isPushAvailable,
+  unsubscribeFromPush,
+  type EnsureSubscribedResult,
+} from "@/lib/push-client";
 
 const REST_PRESETS = [60, 90, 120, 180] as const;
 const REST_MIN = 10;
 const REST_MAX = 600;
+const PUSH_OPT_OUT_KEY = "tugym:push-opted-out";
+
+function isPushOptedOut(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(PUSH_OPT_OUT_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function setPushOptedOut(value: boolean): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (value) window.localStorage.setItem(PUSH_OPT_OUT_KEY, "1");
+    else window.localStorage.removeItem(PUSH_OPT_OUT_KEY);
+  } catch {
+    /* storage unavailable */
+  }
+}
 
 function sanitizeIntInput(value: string): string | null {
   if (value === "") return "";
@@ -31,6 +57,27 @@ export default function SettingsPage() {
   const [notifState, setNotifState] = useState<NotifState>(() =>
     getNotifPermission(),
   );
+  const [pushStatus, setPushStatus] = useState<
+    "idle" | "working" | "subscribed" | "local_only"
+  >(() => {
+    if (getNotifPermission() !== "granted") return "idle";
+    if (isPushOptedOut()) return "local_only";
+    return isPushAvailable() ? "working" : "local_only";
+  });
+
+  useEffect(() => {
+    if (notifState !== "granted") return;
+    if (!isPushAvailable()) return;
+    if (isPushOptedOut()) return;
+    let cancelled = false;
+    void ensureSubscribed().then((res) => {
+      if (cancelled) return;
+      setPushStatus(res.subscribed ? "subscribed" : "local_only");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [notifState]);
 
   function commitRest(raw: string) {
     if (raw === "") {
@@ -78,6 +125,23 @@ export default function SettingsPage() {
   async function handleRequestNotif() {
     const result = await requestNotifPermission();
     setNotifState(result);
+    if (result === "granted") {
+      setPushOptedOut(false);
+      if (!isPushAvailable()) {
+        setPushStatus("local_only");
+        return;
+      }
+      setPushStatus("working");
+      const res: EnsureSubscribedResult = await ensureSubscribed();
+      setPushStatus(res.subscribed ? "subscribed" : "local_only");
+    }
+  }
+
+  async function handleDisablePush() {
+    setPushStatus("working");
+    setPushOptedOut(true);
+    await unsubscribeFromPush();
+    setPushStatus("local_only");
   }
 
   return (
@@ -184,7 +248,12 @@ export default function SettingsPage() {
               Para que te avisemos cuando termine el descanso si tenés la app
               en segundo plano.
             </p>
-            <NotifControl state={notifState} onRequest={handleRequestNotif} />
+            <NotifControl
+              state={notifState}
+              pushStatus={pushStatus}
+              onRequest={handleRequestNotif}
+              onDisablePush={handleDisablePush}
+            />
           </div>
         </div>
       </section>
@@ -239,21 +308,47 @@ function Toggle({
 
 function NotifControl({
   state,
+  pushStatus,
   onRequest,
+  onDisablePush,
 }: {
   state: NotifState;
+  pushStatus: "idle" | "working" | "subscribed" | "local_only";
   onRequest: () => void;
+  onDisablePush: () => void;
 }) {
   if (state === "granted") {
+    const label =
+      pushStatus === "subscribed"
+        ? "Activadas y conectadas al servidor"
+        : pushStatus === "working"
+          ? "Conectando con el servidor..."
+          : "Activadas (solo local)";
+    const helper =
+      pushStatus === "local_only"
+        ? "El server no respondió. Los avisos en background pueden no llegar si la app se cierra."
+        : null;
     return (
-      <button
-        type="button"
-        disabled
-        className="flex h-11 w-fit items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-4 text-sm font-semibold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
-      >
-        <span aria-hidden="true">✓</span>
-        Activadas
-      </button>
+      <div className="flex flex-col gap-2">
+        <div
+          className="flex h-11 w-fit items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-4 text-sm font-semibold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
+        >
+          <span aria-hidden="true">✓</span>
+          {label}
+        </div>
+        {helper && (
+          <p className="text-xs text-zinc-600 dark:text-zinc-400">{helper}</p>
+        )}
+        {pushStatus === "subscribed" && (
+          <button
+            type="button"
+            onClick={onDisablePush}
+            className="flex h-11 w-fit items-center rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 transition-colors hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-600"
+          >
+            Desactivar notificaciones
+          </button>
+        )}
+      </div>
     );
   }
 

@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'tugym-shell-v2';
+const SHELL_CACHE = 'tugym-shell-v3';
 const STATIC_CACHE = 'tugym-static-v1';
 
 const PRECACHE_URLS = [
@@ -131,6 +131,41 @@ async function staleWhileRevalidate(request, cacheName, ignoreSearch) {
     .catch(() => undefined);
   return cached || (await network);
 }
+
+// Push real desde el server (Cloudflare Worker + DO). Si el browser entrega un push,
+// mostramos la notif acá; el handler de notificationclick es el mismo que el local.
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { title: 'TuGym', body: event.data ? event.data.text() : '' };
+  }
+  event.waitUntil(
+    self.registration
+      .showNotification(data.title || 'Descanso terminado', {
+        body: data.body || 'Próxima serie',
+        tag: 'rest-timer',
+        renotify: false,
+        vibrate: [200, 100, 200],
+        icon: '/icon1',
+        badge: '/icon1',
+        data: { url: data.url || '/entrenar/sesion' },
+        silent: false,
+      })
+      .catch(() => undefined),
+  );
+});
+
+// iOS/Safari y otros pueden rotar la subscription. Avisamos a los clients para re-registrar.
+self.addEventListener('pushsubscriptionchange', (event) => {
+  event.waitUntil(
+    (async () => {
+      const clientsList = await self.clients.matchAll({ includeUncontrolled: true });
+      clientsList.forEach((c) => c.postMessage({ type: 'PUSH_SUBSCRIPTION_CHANGED' }));
+    })(),
+  );
+});
 
 // Rest timer: la app pide armar la notif al irse a background; al volver pide desarmarla.
 let restTimerTimeout = null;
