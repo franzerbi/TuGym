@@ -1,0 +1,20 @@
+name = "tugym-push"
+main = "src/index.ts"
+compatibility_date = "2025-05-01"
+
+[[durable_objects.bindings]]
+name = "DEVICE"
+class_name = "DeviceDO"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["DeviceDO"]
+
+[vars]
+ALLOWED_ORIGIN = "https://tugym.vercel.app"
+VAPID_SUBJECT = "mailto:franciscozerbino1@gmail.com"
+
+# Secrets set via `wrangler secret put`:
+#   VAPID_PUBLIC_KEY
+#   VAPID_PRIVATE_KEY
+#   AUTH_TOKEN

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TuGym Push — Test Page</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 720px; }
+    button { padding: 0.5rem 1rem; font-size: 1rem; margin-right: 0.5rem; }
+    pre { background: #f4f4f4; padding: 1rem; white-space: pre-wrap; word-break: break-all; }
+    label { display: block; margin: 0.5rem 0; }
+    input { width: 100%; padding: 0.5rem; font-family: monospace; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <h1>TuGym Push — Test Page</h1>
+
+  <label>
+    VAPID public key (base64url, sin padding):
+    <input id="vapid" value="" />
+  </label>
+
+  <label>
+    Worker base URL:
+    <input id="base" value="http://localhost:8787" />
+  </label>
+
+  <label>
+    Device ID (UUID v4):
+    <input id="device" value="" />
+  </label>
+
+  <label>
+    Auth token:
+    <input id="token" value="dev-token-replace-me" />
+  </label>
+
+  <p>
+    <button id="register">1. Registrar SW</button>
+    <button id="subscribe">2. Subscribe + enviar al Worker</button>
+    <button id="arm">3. Arm en 15s</button>
+    <button id="disarm">4. Disarm</button>
+    <button id="unsubscribe">5. Unsubscribe</button>
+  </p>
+
+  <h3>Subscription JSON:</h3>
+  <pre id="sub">(vacío)</pre>
+
+  <h3>Log:</h3>
+  <pre id="log"></pre>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const log = (m) => { $('log').textContent += m + '\n'; console.log(m); };
+
+if (!$('device').value) {
+  $('device').value = crypto.randomUUID();
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  const out = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+
+async function callWorker(path, body) {
+  const res = await fetch($('base').value + path, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-tugym-token': $('token').value },
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  log(`POST ${path} → ${res.status} ${text}`);
+  return { status: res.status, text };
+}
+
+$('register').onclick = async () => {
+  const reg = await navigator.serviceWorker.register('/sw.js');
+  log('SW registered, scope=' + reg.scope);
+};
+
+$('subscribe').onclick = async () => {
+  const reg = await navigator.serviceWorker.ready;
+  const perm = await Notification.requestPermission();
+  log('Notification permission: ' + perm);
+  if (perm !== 'granted') return;
+  const sub = await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array($('vapid').value),
+  });
+  const json = sub.toJSON();
+  $('sub').textContent = JSON.stringify(json, null, 2);
+  await callWorker('/api/push/subscribe', { deviceId: $('device').value, subscription: json });
+};
+
+$('arm').onclick = async () => {
+  const endsAt = Date.now() + 15000;
+  await callWorker('/api/push/arm', { deviceId: $('device').value, endsAt, exerciseName: 'Banca' });
+};
+
+$('disarm').onclick = async () => {
+  await callWorker('/api/push/disarm', { deviceId: $('device').value });
+};
+
+$('unsubscribe').onclick = async () => {
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  if (sub) await sub.unsubscribe();
+  await callWorker('/api/push/unsubscribe', { deviceId: $('device').value });
+};
+</script>
+</body>
+</html>
